@@ -1,2 +1,2 @@
-# silk-ia
+# Silk-IA
 Progetto per il corso di Laboratorio di Intelligenza Artificiale (a.a. 2021/2022). L'obiettivo del progetto è quello di riconoscere se nell'immagine proposta c'è una quantità sufficiente o insufficiente di foglie. Il progetto si pone in un contesto più generale dove l'indicazione sulla quantità di foglie diventa un trigger per distribuirne altre e quindi alimentare correttamente i bachi da seta.
