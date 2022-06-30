@@ -1,9 +1,10 @@
 import cv2 as cv
 import numpy as np
-import matplotlib.pyplot as plt
+from PIL import Image as im
+from collections import Counter
 
 window_name = 'Originalie - No foglie - No bachi'
-dim = (630, 550)
+dim = (430, 250)
 leaves_mask_space = cv.COLOR_RGBA2BGR 
 
 ### Rimuove la rete del letto dei bachi
@@ -62,34 +63,55 @@ def show_samples():
         # Posiziono le immagini in una sola finestra
         res = np.concatenate((src_resized,out_nofoglie_resized,out_nobachi_resized), axis=1)
         
+        print("#############################################################################################")
+        print("No Bachi= ")
+        get_leaves_presence(out_nobachi)
+
+        print("No Foglie= ")
+        get_worms_presence(out_nofoglie)
+        print("#############################################################################################")
+        
         # Mostro il risultato
         cv.imshow(window_name, res)
         cv.waitKey(0)
 
-        print("Source= ")
-        getColorLevels(src)
+        
 
-        print("No Bachi= ")
-        getColorLevels(out_nobachi)
+### Estrae feature: presenza delle foglie (<50.0 dai da mangiare, altrimenti ok)
+def get_leaves_presence(img):
+    b, g, r = cv.split(img)
+    mask = (b != 0) & (g != 0) & (r != 0)
+    img[mask] = (48, 252, 3)
+    img[mask==0] = (0, 0, 0)
 
-        print("No Foglie= ")
-        getColorLevels(out_nofoglie)
+    lower = np.array((48, 252, 3), dtype=np.uint8)
+    upper = np.array((48, 252, 3), dtype=np.uint8)
 
-### Estrae features: numero pixel bianchi, numero pixel neri, quantità verde
-def getColorLevels(img):
-    print("***************************************************************************")
-    number_of_white_pix = np.sum(img == 255)
-    number_of_black_pix = np.sum(img == 0)
-    number_of_green_pix = np.sum(img == (0, 255, 0))
+    mask = cv.inRange(img, lower, upper)
+
+    ratio_green = cv.countNonZero(mask)/(img.size/3)
+    colorPercent = (ratio_green * 100)
+
+    print('Presenza foglie:', np.round(colorPercent, 2))
+
+### Estrae feature: presenza dei bachi (>20.0 dai da mangiare, altrimenti ok)
+def get_worms_presence(img):
+    b, g, r = cv.split(img)
+    mask = (b != 0) & (g != 0) & (r != 0)
+    img[mask] = (242, 255, 3)
+    img[mask==0] = (0, 0, 0)
+
+    lower = np.array((242, 255, 3), dtype=np.uint8)
+    upper = np.array((242, 255, 3), dtype=np.uint8)
+
+    mask = cv.inRange(img, lower, upper)
+
+    ratio_green = cv.countNonZero(mask)/(img.size/3)
+    colorPercent = (ratio_green * 100)
+
+    print('Presenza bachi:', np.round(colorPercent, 2))
     
-    average_color_row = np.average(img, axis=0)
-    average_color = np.average(average_color_row, axis=0)
     
-    print('Media colori:         ', average_color)
-    print('---------------------------------------')
-    print('Numero pixel bianchi: ', number_of_white_pix)
-    print('---------------------------------------')
-    print('Number pixel neri:    ', number_of_black_pix)
-    print("***************************************************************************")
+
 
 show_samples()
