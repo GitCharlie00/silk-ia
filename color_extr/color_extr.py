@@ -109,6 +109,6 @@ def get_worms_presence(img):
 
     print('Presenza bachi:', np.round(colorPercent, 2))
 
-### Estrazione altre 2/3 features
+### Estrazione altre 2/3 features (percentuale nero (assenza foglie,bachi), sfondo,colore dominante source, colore recessivo source ?)
 
 ### Prende le immagini e restituisce un array np con le features
