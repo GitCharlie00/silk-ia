@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import matplotlib.pyplot as plt
 
 window_name = 'Originalie - No foglie - No bachi'
 dim = (630, 550)
@@ -39,29 +40,56 @@ def remove_leaves(src):
     
     return fin
 
-###################################################### MAIN ###################################################à
+def show_samples():
+    for i in range(0,6):
+        # Carico una foto
+        src = cv.imread('./sample/src'+str(i)+'.jpg')
+        
+        # Rimuovo la rete
+        no_rete = remove_web(src)
 
-for i in range(0,6):
-    # Carico una foto
-    src = cv.imread('./sample/src'+str(i)+'.jpg')
+        # Ottengo la foto senza rete ne bachi
+        out_nobachi = remove_worms(no_rete)
+
+        # Ottengo la foto senza rete ne foglie
+        out_nofoglie = remove_leaves(no_rete)
+        
+        # Ridimensiono le immagini per check di qualità operazione
+        src_resized = cv.resize(src, dim, interpolation = cv.INTER_AREA)
+        out_nobachi_resized = cv.resize(out_nobachi, dim, interpolation = cv.INTER_AREA)
+        out_nofoglie_resized = cv.resize(out_nofoglie, dim, interpolation = cv.INTER_AREA)
+        
+        # Posiziono le immagini in una sola finestra
+        res = np.concatenate((src_resized,out_nofoglie_resized,out_nobachi_resized), axis=1)
+        
+        # Mostro il risultato
+        cv.imshow(window_name, res)
+        cv.waitKey(0)
+
+        print("Source= ")
+        getColorLevels(src)
+
+        print("No Bachi= ")
+        getColorLevels(out_nobachi)
+
+        print("No Foglie= ")
+        getColorLevels(out_nofoglie)
+
+### Estrae features: numero pixel bianchi, numero pixel neri, quantità verde
+def getColorLevels(img):
+    print("***************************************************************************")
+    number_of_white_pix = np.sum(img == 255)
+    number_of_black_pix = np.sum(img == 0)
+    number_of_green_pix = np.sum(img == (0, 255, 0))
     
-    # Rimuovo la rete
-    no_rete = remove_web(src)
-
-    # Ottengo la foto senza rete ne bachi
-    out_nobachi = remove_worms(no_rete)
-
-    # Ottengo la foto senza rete ne foglie
-    out_nofoglie = remove_leaves(no_rete)
-
-    # Ridimensiono le immagini per check di qualità operazione
-    src_resized = cv.resize(src, dim, interpolation = cv.INTER_AREA)
-    out_nobachi_resized = cv.resize(out_nobachi, dim, interpolation = cv.INTER_AREA)
-    out_nofoglie_resized = cv.resize(out_nofoglie, dim, interpolation = cv.INTER_AREA)
+    average_color_row = np.average(img, axis=0)
+    average_color = np.average(average_color_row, axis=0)
     
-    # Posiziono le immagini in una sola finestra
-    res = np.concatenate((src_resized,out_nofoglie_resized,out_nobachi_resized), axis=1)
-    
-    # Mostro il risultato
-    cv.imshow(window_name, res)
-    cv.waitKey(0)
+    print('Media colori:         ', average_color)
+    print('---------------------------------------')
+    print('Numero pixel bianchi: ', number_of_white_pix)
+    print('---------------------------------------')
+    print('Number pixel neri:    ', number_of_black_pix)
+    print("***************************************************************************")
+
+show_samples()
