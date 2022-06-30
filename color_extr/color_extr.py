@@ -3,21 +3,21 @@ import numpy as np
 
 window_name = 'Originalie - No foglie - No bachi'
 dim = (630, 550)
+leaves_mask_space = cv.COLOR_RGBA2BGR 
 
-### Rimuove la retina verde
-def rete_mask(pic):
+### Rimuove la rete del letto dei bachi
+def remove_web(pic):
     lower = np.array([51, 71, 21], np.uint8)
     upper = np.array([255, 255, 85], np.uint8)
     
-    src = cv.imread(pic)
-    mask = cv.inRange(src, lower, upper)
+    mask = cv.inRange(pic, lower, upper)
     mask_inv = cv.bitwise_not(mask)  
-    res = cv.bitwise_and(src,src,mask = mask_inv)  
+    res = cv.bitwise_and(pic,pic,mask = mask_inv)  
     
     return res
 
 ### Rimuove i bachi, mantiene foglie
-def bachi_mask(pic):
+def remove_worms(pic):
     lower = np.array([110, 109, 109], np.uint8)
     upper = np.array([255, 255, 255], np.uint8)
     
@@ -26,39 +26,42 @@ def bachi_mask(pic):
     res = cv.bitwise_and(pic,pic,mask = mask_inv)  
     
     return res
-
-### Rimuove le foglie, mantiene fondo e bachi
-def foglie_mask(pic):
-    lower = np.array([0, 0, 0], np.uint8)
-    upper = np.array([216, 207, 193], np.uint8)
+### Rimuove le foglie, mantiene bachi
+def remove_leaves(src):
+    lower = np.array([100, 150, 170], np.uint8)
+    upper = np.array([255, 255, 255], np.uint8)
     
+    # Converto in BGR per via del maggior contrasto tra foglie, bachi e sfondo
+    pic = cv.cvtColor(src,leaves_mask_space)
     mask = cv.inRange(pic, lower, upper)
-    mask_inv = cv.bitwise_not(mask)  
-    res = cv.bitwise_and(pic,pic,mask = mask_inv)  
+    res = cv.bitwise_and(pic,pic,mask = mask)  
+    fin = cv.cvtColor(res,leaves_mask_space)
     
-    return res
+    return fin
 
 ###################################################### MAIN ###################################################à
 
-#for i in range(0,6):
-#    no_rete = rete_mask('./sample/src'+str(i)+'.jpg')
-#    out = bachi_mask(no_rete)
-#    res_resized = cv.resize(out, dim, interpolation = cv.INTER_AREA)
-#    cv.imshow(window_name, res_resized)
-#    cv.waitKey(0)
-
 for i in range(0,6):
+    # Carico una foto
     src = cv.imread('./sample/src'+str(i)+'.jpg')
     
-    no_rete = rete_mask('./sample/src'+str(i)+'.jpg')
-    out_nobachi = bachi_mask(no_rete)
-    out_nofoglie = foglie_mask(no_rete)
+    # Rimuovo la rete
+    no_rete = remove_web(src)
 
+    # Ottengo la foto senza rete ne bachi
+    out_nobachi = remove_worms(no_rete)
+
+    # Ottengo la foto senza rete ne foglie
+    out_nofoglie = remove_leaves(no_rete)
+
+    # Ridimensiono le immagini per check di qualità operazione
     src_resized = cv.resize(src, dim, interpolation = cv.INTER_AREA)
     out_nobachi_resized = cv.resize(out_nobachi, dim, interpolation = cv.INTER_AREA)
     out_nofoglie_resized = cv.resize(out_nofoglie, dim, interpolation = cv.INTER_AREA)
     
+    # Posiziono le immagini in una sola finestra
     res = np.concatenate((src_resized,out_nofoglie_resized,out_nobachi_resized), axis=1)
     
+    # Mostro il risultato
     cv.imshow(window_name, res)
     cv.waitKey(0)
