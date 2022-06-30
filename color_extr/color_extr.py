@@ -1,9 +1,7 @@
 import cv2 as cv
 import numpy as np
-from PIL import Image as im
-from collections import Counter
 
-window_name = 'Originalie - No foglie - No bachi'
+window_name = 'Originale - No foglie - No bachi'
 dim = (430, 250)
 leaves_mask_space = cv.COLOR_RGBA2BGR 
 
@@ -110,8 +108,7 @@ def get_worms_presence(img):
     colorPercent = (ratio_green * 100)
 
     print('Presenza bachi:', np.round(colorPercent, 2))
-    
-    
 
+### Estrazione altre 2/3 features
 
-show_samples()
+### Prende le immagini e restituisce un array np con le features
