@@ -44,6 +44,7 @@ def remove_leaves(src):
     
     return fin
 
+### Mostra i risultati dei vari filtri/maschere applicate alle foto
 def show_samples():
     for i in range(0,6):
         # Carico una foto
@@ -85,23 +86,28 @@ def show_samples():
 
 ### Estrae feature: presenza delle foglie (<50.0 dai da mangiare, altrimenti ok)
 def get_leaves_presence(img):
+    # Ottengo i canali dell'immagine
     b, g, r = cv.split(img)
+    # Creo una maschera che individuerà solo i pixel non neri (foglie)
     mask = (b != 0) & (g != 0) & (r != 0)
+    # Applico la maschera alla foto sostituendo i pixel non neri con un unico colore (per poterli rilevare meglio)
     img[mask] = (48, 252, 3)
     img[mask==0] = (0, 0, 0)
 
+    # Isolo i pixel rimasti
     lower = np.array((48, 252, 3), dtype=np.uint8)
     upper = np.array((48, 252, 3), dtype=np.uint8)
 
     mask = cv.inRange(img, lower, upper)
 
+    # Calcolo la percentuale considerando i pixel non nulli
     ratio_green = cv.countNonZero(mask)/(img.size/3)
     colorPercent = (ratio_green * 100)
 
     return np.round(colorPercent, 2)
 
-### Estrae feature: presenza dei bachi (>20.0 dai da mangiare, altrimenti ok)
-def get_worms_presence(img):
+### Estrae feature: presenza dei bachi (>15.5 dai da mangiare, altrimenti ok)
+def get_worms_presence(img):    
     b, g, r = cv.split(img)
     mask = (b != 0) & (g != 0) & (r != 0)
     img[mask] = (242, 255, 3)
@@ -136,45 +142,66 @@ def get_black(img):
 
   
 ### Prende le immagini e restituisce un array np con le features
-def get_data():   
+def get_data():
+    # Percorso cartella con le foto   
     folder_dir = data_dir
+    # Numero totale di foto
     total_photoes = len(listdir(folder_dir))
+    # Inizializzo l'array numpy (total_photoes, 5) che conterrà le 5 features (presenza/assenza foglie, presenza/assenza bachi-sfondo, classificazione)
     out = np.zeros(shape=(len(listdir(folder_dir)),5), dtype= 'object')
+    # Definisco il tipo dell'ultima feature come intero
     out[:,1].astype(int)
+    # Contatore per popolare l'array
     cnt = 0
 
-    print(f"Computing: {cnt}/{total_photoes} -> {cnt/total_photoes*100:.1f} %", end="\r")
-
+    # Per ogni immagine
     for images in listdir(folder_dir):
+        # Acquisisco l'immagine
         src = cv.imread(folder_dir+images)
+        # Rimuovo la rete
         no_rete = remove_web(src)
 
+        # Ottengo la foto senza rete ne bachi
         out_nobachi = remove_worms(no_rete)
+        # Ottengo la foto senza rete ne foglie
         out_nofoglie = remove_leaves(no_rete)
 
+        # Calcolo la presenza di foglie nella foto
         presenza_foglie = float(get_leaves_presence(out_nobachi))
+        # Calcolo l'assenza di foglie nella foto
         assenza_foglie = float(get_black(out_nobachi))
 
+        # Calcolo la presenza di di bachi-sfondo nella foto
         presenza_bachi_sfondo = float(get_worms_presence(out_nofoglie))
+        # Calcolo l'assenza di bachi-sfondo nella foto
         assenza_bachi_sfondo = float(get_black(out_nofoglie))
-
+        
+        # Etichetto automaticamente i risultati con i due valori della classificazione
         if(presenza_foglie <= 50.0 and assenza_foglie >= 50.0 and presenza_bachi_sfondo >= 15.5 and assenza_bachi_sfondo <= 84.5): #dai da mangiare
             classificazione = 1
         else:   #non dare da mangiare
             classificazione = 0
 
+        # Aggiungo i dati della foto nell'output
         out[[cnt]] = [[presenza_foglie,assenza_foglie,presenza_bachi_sfondo,assenza_bachi_sfondo,classificazione]]
         cnt+=1
 
+    # Salvo il dataset creato
     save_data(out, listdir(folder_dir))
 
+### Crea il dataset
 def save_data(data, images):
+    # Apro (creo) il file che conterrà il dataset
     f = open('./data.csv', 'w', newline='')
+    # Inizializzo il writer
     writer = csv.writer(f)
 
+    # Scrivo l'header (campo foto serve per test)
     writer.writerow(['presenza_foglie','assenza_foglie','presenza_bachi_sfondo','assenza_bachi_sfondo','classificazione','foto'])
 
+    # Scrivo il dataset
     for i in range(0, len(data)):
         writer.writerow(np.append(data[i],images[i]))
     
+    # Chiudo il file
     f.close()
