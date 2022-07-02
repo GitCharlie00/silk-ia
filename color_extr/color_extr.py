@@ -1,10 +1,12 @@
+from cgi import test
 import cv2 as cv
 import numpy as np
 from os import listdir
+import csv
 
 window_name = 'Originale - No foglie - No bachi'
 test_dir = "./sample/"
-data_dir = "E:\\SilkIA\\"
+data_dir = "E:\\SilkIA\\100CANON\\"
 dim = (430, 250)
 leaves_mask_space = cv.COLOR_RGBA2BGR 
 
@@ -88,9 +90,6 @@ def get_leaves_presence(img):
     img[mask] = (48, 252, 3)
     img[mask==0] = (0, 0, 0)
 
-    #cv.imshow(window_name, cv.resize(img, dim, interpolation = cv.INTER_AREA))
-    #cv.waitKey(0)
-
     lower = np.array((48, 252, 3), dtype=np.uint8)
     upper = np.array((48, 252, 3), dtype=np.uint8)
 
@@ -99,7 +98,6 @@ def get_leaves_presence(img):
     ratio_green = cv.countNonZero(mask)/(img.size/3)
     colorPercent = (ratio_green * 100)
 
-    #print('Presenza foglie:', np.round(colorPercent, 2))
     return np.round(colorPercent, 2)
 
 ### Estrae feature: presenza dei bachi (>20.0 dai da mangiare, altrimenti ok)
@@ -109,9 +107,6 @@ def get_worms_presence(img):
     img[mask] = (242, 255, 3)
     img[mask==0] = (0, 0, 0)
 
-    #cv.imshow(window_name, cv.resize(img, dim, interpolation = cv.INTER_AREA))
-    #cv.waitKey(0)
-
     lower = np.array((242, 255, 3), dtype=np.uint8)
     upper = np.array((242, 255, 3), dtype=np.uint8)
 
@@ -120,7 +115,6 @@ def get_worms_presence(img):
     ratio_blu = cv.countNonZero(mask)/(img.size/3)
     colorPercent = (ratio_blu * 100)
 
-    #print('Presenza bachi e fondo:', np.round(colorPercent, 2))
     return np.round(colorPercent, 2)
 
 ### Estrae feature: assenza di bachi/foglie
@@ -130,9 +124,6 @@ def get_black(img):
     img[mask] = (211, 52, 235)
     img[mask==0] = (0, 0, 0)
 
-    #cv.imshow(window_name, cv.resize(img, dim, interpolation = cv.INTER_AREA))
-    #cv.waitKey(0)
-
     lower = np.array((211, 52, 235), dtype=np.uint8)
     upper = np.array((211, 52, 235), dtype=np.uint8)
 
@@ -141,17 +132,18 @@ def get_black(img):
     ratio_yellow = cv.countNonZero(mask)/(img.size/3)
     colorPercent = (ratio_yellow * 100)
 
-    #print('Assenza di elementi:', np.round(colorPercent, 2))
     return np.round(colorPercent, 2)
 
   
 ### Prende le immagini e restituisce un array np con le features
 def get_data():   
-    # get the path/directory
-    #folder_dir = "E:\\100CANON"
-    folder_dir = test_dir
-    out = np.zeros(shape=(len(listdir(folder_dir)),5))
+    folder_dir = data_dir
+    total_photoes = len(listdir(folder_dir))
+    out = np.zeros(shape=(len(listdir(folder_dir)),5), dtype= 'object')
+    out[:,1].astype(int)
     cnt = 0
+
+    print(f"Computing: {cnt}/{total_photoes} -> {cnt/total_photoes*100:.1f} %", end="\r")
 
     for images in listdir(folder_dir):
         src = cv.imread(folder_dir+images)
@@ -166,7 +158,7 @@ def get_data():
         presenza_bachi_sfondo = float(get_worms_presence(out_nofoglie))
         assenza_bachi_sfondo = float(get_black(out_nofoglie))
 
-        if(presenza_foglie <= 50.0 and assenza_foglie >= 50.0 and presenza_bachi_sfondo >= 20.0 and assenza_bachi_sfondo <= 80.0): #dai da mangiare
+        if(presenza_foglie <= 50.0 and assenza_foglie >= 50.0 and presenza_bachi_sfondo >= 15.5 and assenza_bachi_sfondo <= 84.5): #dai da mangiare
             classificazione = 1
         else:   #non dare da mangiare
             classificazione = 0
@@ -174,6 +166,15 @@ def get_data():
         out[[cnt]] = [[presenza_foglie,assenza_foglie,presenza_bachi_sfondo,assenza_bachi_sfondo,classificazione]]
         cnt+=1
 
-    return out
+    save_data(out, listdir(folder_dir))
 
-get_data()
+def save_data(data, images):
+    f = open('./data.csv', 'w', newline='')
+    writer = csv.writer(f)
+
+    writer.writerow(['presenza_foglie','assenza_foglie','presenza_bachi_sfondo','assenza_bachi_sfondo','classificazione','foto'])
+
+    for i in range(0, len(data)):
+        writer.writerow(np.append(data[i],images[i]))
+    
+    f.close()
