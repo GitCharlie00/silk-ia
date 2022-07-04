@@ -1,6 +1,7 @@
 # Progetto di Laboratorio di intelligenza Artificiale - A.A. 2021-2022
 ---
 ## _SilkIA: tecnologia per la moderna sericoltura_
+<p>
 
 ## Contesto
 Il baco da seta è una larva che si nutre solo di gelso e che, nel processo di metamorfosi da baco a falena, si imbozzola in un involucro fatto di filo di seta.
