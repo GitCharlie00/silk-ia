@@ -4,7 +4,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
-from sklearn import metrics
 
 # Carico il dataset
 path = '../color_extr/data.csv'
@@ -36,8 +35,8 @@ svmm = clf.fit(X_train, Y_train)
 predictions_svmm = clf.predict(X_test)
 
 # Controllo accuratezza risultati
-train_score = metrics.accuracy_score(Y_test, predictions_svmm)
-test_score = svmm.score(X_train, Y_train)
+train_score = svmm.score(X_train, Y_train)
+test_score = svmm.score(X_test, Y_test)
 print("### SVM:\n\tAccuracy of training: "+str(train_score)+"\n\tAccuracy of test: "+str(test_score))
 
 # K-nearest neighbour
@@ -47,6 +46,6 @@ knn = model_knn.fit(X_train, Y_train)
 predictions_knn = model_knn.predict(X_test)
 
 # Controllo accuratezza risultati
-train_score = metrics.accuracy_score(Y_test, predictions_knn)
-test_score = knn.score(X_train, Y_train)
+train_score = knn.score(X_train, Y_train)
+test_score = knn.score(X_test, Y_test)
 print("### KNN:\n\tAccuracy of training: "+str(train_score)+"\n\tAccuracy of test: "+str(test_score))
