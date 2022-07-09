@@ -1,4 +1,3 @@
-from cgi import test
 import cv2 as cv
 import numpy as np
 from os import listdir
@@ -205,3 +204,5 @@ def save_data(data, images):
     
     # Chiudo il file
     f.close()
+
+show_samples()
