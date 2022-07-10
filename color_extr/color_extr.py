@@ -7,7 +7,6 @@ window_name = 'Originale - No foglie - No bachi'
 test_dir = "./sample/"
 data_dir = "E:\\SilkIA\\100CANON\\"
 dim = (430, 250)
-leaves_mask_space = cv.COLOR_RGBA2BGR 
 
 ### Rimuove la rete del letto dei bachi
 def remove_web(pic):
@@ -17,7 +16,11 @@ def remove_web(pic):
     mask = cv.inRange(pic, lower, upper)
     mask_inv = cv.bitwise_not(mask)  
     res = cv.bitwise_and(pic,pic,mask = mask_inv)  
-    
+
+    cv.imshow(window_name, cv.resize(res, dim, interpolation = cv.INTER_AREA))
+    cv.imwrite('./notebook_pic/no_web.jpg', res)
+    cv.waitKey(0)
+
     return res
 
 ### Rimuove i bachi, mantiene foglie
@@ -28,10 +31,13 @@ def remove_worms(pic):
     mask = cv.inRange(pic, lower, upper)
     mask_inv = cv.bitwise_not(mask)  
     res = cv.bitwise_and(pic,pic,mask = mask_inv)  
-    
+
     return res
+
 ### Rimuove le foglie, mantiene bachi
 def remove_leaves(src):
+    leaves_mask_space = cv.COLOR_RGBA2BGR
+
     lower = np.array([100, 150, 170], np.uint8)
     upper = np.array([255, 255, 255], np.uint8)
     
@@ -66,22 +72,16 @@ def show_samples():
         # Posiziono le immagini in una sola finestra
         res = np.concatenate((src_resized,out_nofoglie_resized,out_nobachi_resized), axis=1)
         
-        print("#############################################################################################")
-        print("No Bachi= ")
+        # Computazione presenza colori
         get_leaves_presence(out_nobachi)
         get_black(out_nobachi)
 
-        print("No Foglie= ")
         get_worms_presence(out_nofoglie)
         get_black(out_nofoglie)
-
-        print("#############################################################################################")
         
         # Mostro il risultato
         cv.imshow(window_name, res)
         cv.waitKey(0)
-
-        
 
 ### Estrae feature: presenza delle foglie (<50.0 dai da mangiare, altrimenti ok)
 def get_leaves_presence(img):
@@ -138,7 +138,6 @@ def get_black(img):
     colorPercent = (ratio_yellow * 100)
 
     return np.round(colorPercent, 2)
-
   
 ### Prende le immagini e restituisce un array np con le features
 def get_data():
@@ -204,5 +203,3 @@ def save_data(data, images):
     
     # Chiudo il file
     f.close()
-
-show_samples()
