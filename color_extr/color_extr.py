@@ -49,40 +49,6 @@ def remove_leaves(src):
     
     return fin
 
-### Mostra i risultati dei vari filtri/maschere applicate alle foto
-def show_samples():
-    for i in range(0,6):
-        # Carico una foto
-        src = cv.imread('./sample/src'+str(i)+'.jpg')
-
-        # Rimuovo la rete
-        no_rete = remove_web(src)
-
-        # Ottengo la foto senza rete ne bachi
-        out_nobachi = remove_worms(no_rete)
-
-        # Ottengo la foto senza rete ne foglie
-        out_nofoglie = remove_leaves(no_rete)
-        
-        # Ridimensiono le immagini per check di qualità operazione
-        src_resized = cv.resize(src, dim, interpolation = cv.INTER_AREA)
-        out_nobachi_resized = cv.resize(out_nobachi, dim, interpolation = cv.INTER_AREA)
-        out_nofoglie_resized = cv.resize(out_nofoglie, dim, interpolation = cv.INTER_AREA)
-        
-        # Posiziono le immagini in una sola finestra
-        res = np.concatenate((src_resized,out_nofoglie_resized,out_nobachi_resized), axis=1)
-        
-        # Computazione presenza colori
-        get_leaves_presence(out_nobachi)
-        get_black(out_nobachi)
-
-        get_worms_presence(out_nofoglie)
-        get_black(out_nofoglie)
-        
-        # Mostro il risultato
-        cv.imshow(window_name, res)
-        cv.waitKey(0)
-
 ### Estrae feature: presenza delle foglie (<50.0 dai da mangiare, altrimenti ok)
 def get_leaves_presence(img):
     # Ottengo i canali dell'immagine
@@ -138,7 +104,41 @@ def get_black(img):
     colorPercent = (ratio_yellow * 100)
 
     return np.round(colorPercent, 2)
-  
+
+### Mostra i risultati dei vari filtri/maschere applicate alle foto
+def show_samples():
+    for i in range(0,6):
+        # Carico una foto
+        src = cv.imread('./sample/src'+str(i)+'.jpg')
+
+        # Rimuovo la rete
+        no_rete = remove_web(src)
+
+        # Ottengo la foto senza rete ne bachi
+        out_nobachi = remove_worms(no_rete)
+
+        # Ottengo la foto senza rete ne foglie
+        out_nofoglie = remove_leaves(no_rete)
+        
+        # Ridimensiono le immagini per check di qualità operazione
+        src_resized = cv.resize(src, dim, interpolation = cv.INTER_AREA)
+        out_nobachi_resized = cv.resize(out_nobachi, dim, interpolation = cv.INTER_AREA)
+        out_nofoglie_resized = cv.resize(out_nofoglie, dim, interpolation = cv.INTER_AREA)
+        
+        # Posiziono le immagini in una sola finestra
+        res = np.concatenate((src_resized,out_nofoglie_resized,out_nobachi_resized), axis=1)
+        
+        # Computazione presenza colori
+        print("Presenza foglie: ",get_leaves_presence(out_nobachi))
+        print("Assenza foglie: ",get_black(out_nobachi))
+
+        print("Presenza bachi e sfondo: ",get_worms_presence(out_nofoglie))
+        print("Assenza bachi e sfondo: ",get_black(out_nofoglie))
+        
+        # Mostro il risultato
+        cv.imshow(window_name, res)
+        cv.waitKey(0)
+
 ### Prende le immagini e restituisce un array np con le features
 def get_data():
     # Percorso cartella con le foto   
