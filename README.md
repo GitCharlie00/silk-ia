@@ -18,5 +18,5 @@ Realizzare un algoritmo di intelligenza artificiale che data una foto del letto 
     - Test dell'algoritmo su altri dataset
 
 - Applicazione di algoritmi di libreria sul dataset 
-    - Analisi di vari mdoelli con il fine di scegliere il migliore per l'applicazione
+    - Analisi di vari modelli con il fine di scegliere il migliore per l'applicazione
     - Confronto con il mio algoritmo
