@@ -7,3 +7,16 @@ L'alimentazione del baco da seta è una delle fasi più importanti e delicate de
 
 ## Obiettivo
 Realizzare un algoritmo di intelligenza artificiale che data una foto del letto dove i bachi sono posti, riesce ad estrarre la quantità di foglie di gelso e di bachi, decidendo in base a questi valori se è necessario nutrire o meno i bachi con altre foglie di gelso. 
+
+## Roadmap
+
+- Estrazione di features dalle immagini acquisite
+
+- EDA sul dataset generato
+
+* Applicazione del mio algoritmo di logistic regression sul dataset
+    - Test dell'algoritmo su altri dataset
+
+- Applicazione di algoritmi di libreria sul dataset 
+    - Analisi di vari mdoelli con il fine di scegliere il migliore per l'applicazione
+    - Confronto con il mio algoritmo
