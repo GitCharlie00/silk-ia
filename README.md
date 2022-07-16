@@ -21,4 +21,4 @@ Realizzare un algoritmo di intelligenza artificiale che data una foto del letto 
     - Analisi di vari modelli con il fine di scegliere il migliore per l'applicazione
     - Confronto con il mio algoritmo
 
-- Test del modello di libreria su un contesto applicativo simile alla realtà in cui verrà applicato
+- Test del modello su un contesto applicativo simile alla realtà in cui verrà utilizzato
