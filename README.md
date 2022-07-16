@@ -14,8 +14,8 @@ Realizzare un algoritmo di intelligenza artificiale che data una foto del letto 
 
 - EDA sul dataset generato
 
-- Applicazione del mio modello di logistic regression sul dataset
-    - Test dell'algoritmo su altri dataset
+- Applicazione del mio modello di logistic regression sul dataset  
+    - Test dell'algoritmo su altri dataset  
 
 - Applicazione di modelli di libreria sul dataset 
     - Conclusioni sul progetto
