@@ -108,7 +108,7 @@ def get_data(path):
     presenza_bachi_sfondo = float(get_worms_presence(out_nofoglie))
     assenza_bachi_sfondo = float(get_black(out_nofoglie))
         
-    out = [0, presenza_foglie,assenza_foglie,presenza_bachi_sfondo,assenza_bachi_sfondo]
+    out = [0,presenza_foglie,assenza_foglie,presenza_bachi_sfondo,assenza_bachi_sfondo]
 
     return out
 
@@ -125,7 +125,8 @@ def hyp(W,X):
 
 def prediction(W,X):
     h = hyp(W,X)
-    Y_hat = h > 0.5
+    Y_hat = h > 0.2
+    print(h)
     return Y_hat
 
 ################################################################ App ################################################################
@@ -155,7 +156,7 @@ class App(tk.Tk):
         path = self.get_img()
         X_val = get_data(path)
         self.set_X(X_val)
-        
+
         pred = prediction(self.W,self.X)
 
         if(pred):
@@ -175,19 +176,15 @@ class App(tk.Tk):
         
         return path
     
-    def set_W(self):
-        self.W[0][0] =  0.00330611
-        self.W[0][1] = -0.94125539
-        self.W[0][2] = -0.00313383
-        self.W[0][3] = 0.95150957
-        self.W[0][4] = 0.00340949
+    def set_W(self): 
+        self.W = np.array([0.00440038,-0.93256816,-0.00203159,0.94874754,0.00452378])
 
     def set_X(self, val):
-        self.X[0][0] = val[0]
-        self.X[0][1] = val[1]
-        self.X[0][2] = val[2]
-        self.X[0][3] = val[3]
-        self.X[0][4] = val[4]
+        self.X = np.array(val)
+
+        sc = StandardScaler()
+        self.X = sc.fit_transform(self.X[:, np.newaxis])
+        self.X = np.reshape(self.X,(1,5))
 
 ################################################################ MAIN ################################################################
 app = App()
