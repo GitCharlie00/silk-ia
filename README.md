@@ -6,7 +6,7 @@ Il baco da seta è una larva che si nutre solo di gelso e che, nel processo di m
 L'alimentazione del baco da seta è una delle fasi più importanti e delicate della bachicoltura: un ridotto apporto di foglie di gelso, soprattuto nei periodi fondamentali della crescita del baco, porterebbe ad avere pochi bozzoli e di scarsa qualità. Ne risenteribbe così la qualità finale del filo di seta.
 
 ## Obiettivo
-Realizzare un algoritmo di intelligenza artificiale che sia in grado di decdicere se è necessario nutrire o meno i bachi in base alle informazioni estratte data una foto del letto dove i bachi sono posti.
+Realizzare un algoritmo di intelligenza artificiale che sia in grado di decidere se è necessario nutrire o meno i bachi in base alle informazioni estratte data una foto del letto dove i bachi sono posti.
 
 ## Roadmap
 
