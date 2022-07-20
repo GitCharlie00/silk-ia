@@ -21,4 +21,4 @@ Realizzare un algoritmo di intelligenza artificiale che sia in grado di decdicer
     - Applicazione di tale modello sui test del punto precedente
     - Conclusioni sul progetto
  
-- Test del modello su un contesto applicativo simile alla realtà in cui verrà utilizzato
+- Test del mio modello di logistic regression in un contesto applicativo simile alla realtà dove verrà utilizzato
