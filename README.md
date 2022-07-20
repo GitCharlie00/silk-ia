@@ -15,7 +15,7 @@ Realizzare un algoritmo di intelligenza artificiale che sia in grado di decidere
 - EDA sul dataset generato
 
 - Applicazione del mio modello di logistic regression sul dataset  
-    - Test dell modello su altri dataset  
+    - Test del modello su altri dataset  
 
 - Applicazione di un classificatore allo stato dell'arte sul dataset 
     - Applicazione di tale modello sui test del punto precedente
